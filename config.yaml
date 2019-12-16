@@ -2,16 +2,16 @@ samples: samples.tsv
 units: units.tsv
 
 ref:
-  name: GRCh38.86
+  name: GRCh37_IKBKGP1_masked
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
-  genome: data/ref/genome.chr21.fa
+  genome: /hpcdata/bcbb/karlinser/Projects/NEMO/mask_fasta/human_g1k_v37_decoy_IKBKGP1_masked.fasta
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
-  known-variants: data/ref/dbsnp.vcf.gz
+  known-variants: /hpcdata/bio_data/current/GATK/bundle/2.8/b37/dbsnp_138.b37.vcf.gz
 
 filtering:
   # Set to true in order to apply machine learning based recalibration of
   # quality scores instead of hard filtering.
-  vqsr: false
+  vqsr: true
   hard:
     # hard filtering as outlined in GATK docs
     # (https://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set)
@@ -24,7 +24,7 @@ processing:
   remove-duplicates: true
   # Uncomment and point to a bed file with, e.g., captured regions if necessary,
   # see https://gatkforums.broadinstitute.org/gatk/discussion/4133/when-should-i-use-l-to-pass-in-a-list-of-intervals.
-  # restrict-regions: captured_regions.bed
+  restrict-regions: /hpcdata/bcbb/karlinser/Projects/NEMO/IKBKG.bed
   # If regions are restricted, uncomment this to enlarge them by the given value in order to include
   # flanking areas.
   # region-padding: 100
