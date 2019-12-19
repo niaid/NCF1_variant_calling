@@ -2,7 +2,7 @@ samples: samples.tsv
 units: units.tsv
 
 ref:
-  name: GRCh37_IKBKGP1_masked
+  name: GRCh37.75
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
   genome: /hpcdata/bcbb/karlinser/Projects/NEMO/mask_fasta/human_g1k_v37_decoy_IKBKGP1_masked.fasta
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
@@ -11,7 +11,7 @@ ref:
 filtering:
   # Set to true in order to apply machine learning based recalibration of
   # quality scores instead of hard filtering.
-  vqsr: true
+  vqsr: false
   hard:
     # hard filtering as outlined in GATK docs
     # (https://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set)
@@ -31,7 +31,7 @@ processing:
 
 params:
   gatk:
-    HaplotypeCaller: ""
+    HaplotypeCaller: "-ploidy 4"
     BaseRecalibrator: ""
     GenotypeGVCFs: ""
     VariantRecalibrator: ""
