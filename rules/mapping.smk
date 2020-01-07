@@ -14,7 +14,7 @@ rule trim_reads_se:
 
 rule trim_reads_pe:
     input:
-        unpack(get_fastq)
+        get_bam_to_fastq
     output:
         r1=temp("trimmed/{sample}-{unit}.1.fastq.gz"),
         r2=temp("trimmed/{sample}-{unit}.2.fastq.gz"),
