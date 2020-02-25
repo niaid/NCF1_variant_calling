@@ -14,8 +14,22 @@ validate(config, schema="../schemas/config.schema.yaml")
 
 samples = pd.read_table(config["samples"]).set_index("sample", drop=False)
 validate(samples, schema="../schemas/samples.schema.yaml")
-
-units = pd.read_table(config["units"], dtype=str).set_index(["sample", "unit"], drop=False)
+d = { 'sample':[],
+  'bam': [],
+  'unit':[],
+  'LB':[],
+  'PU': []}
+for index, row in samples.iterrows():
+    sample = row['sample']
+    bam = row['bam']
+    readgroups = get_read_groups(bam)
+    for i in range(len(readgroups)):
+        d['sample'].append(sample)
+        d['bam'].append(bam)
+        d['unit'].append(i+1)
+        d['LB'].append(readgroups[i]['LB'])
+        d['PU'].append(readgroups[i]['PU'])
+units = pd.DataFrame(data=d).set_index(["sample", "unit"], drop=False)
 units.index = units.index.set_levels([i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="../schemas/units.schema.yaml")
 
