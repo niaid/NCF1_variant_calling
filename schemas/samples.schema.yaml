@@ -5,6 +5,10 @@ properties:
   sample:
     type: string
     description: sample name/identifier
+  bam:
+    type: string
+    description: path to bam file
 
 required:
   - sample
+  - bam
