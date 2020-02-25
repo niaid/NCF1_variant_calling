@@ -33,6 +33,8 @@ d = { 'sample':[],
   'ID': [],
   'LB':[],
   'platform':[],
+  'fq1':[],
+  'fq2':[]
   'PU': []}
 for index, row in samples.iterrows():
     sample = row['sample']
@@ -46,6 +48,8 @@ for index, row in samples.iterrows():
         d['LB'].append(readgroups[i]['LB'])
         d['PU'].append(readgroups[i]['PU'])
         d['platform'].append('ILLUMINA')
+        d['fq1'].append("samtofastq/" + sample + "-{unit}.1.fq")
+        d['fq2'].append("samtofastq/{sample}-{unit}.2.fq")
 units = pd.DataFrame(data=d).set_index(["sample", "unit"], drop=False)
 units.index = units.index.set_levels([i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="../schemas/units.schema.yaml")
