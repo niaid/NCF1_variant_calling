@@ -32,6 +32,7 @@ d = { 'sample':[],
   'unit':[],
   'ID': [],
   'LB':[],
+  'platform':[],
   'PU': []}
 for index, row in samples.iterrows():
     sample = row['sample']
@@ -44,6 +45,7 @@ for index, row in samples.iterrows():
         d['ID'].append(readgroups[i]['ID'])
         d['LB'].append(readgroups[i]['LB'])
         d['PU'].append(readgroups[i]['PU'])
+        d['platform'].append(readgroups[i]['PL'])
 units = pd.DataFrame(data=d).set_index(["sample", "unit"], drop=False)
 units.index = units.index.set_levels([i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="../schemas/units.schema.yaml")
