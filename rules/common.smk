@@ -8,6 +8,19 @@ min_version("5.7.1")
 
 report: "../report/workflow.rst"
 
+###### Function to parse bam file #####
+def get_rg_from_bam(bam):
+    '''
+    (str) -> [dict]
+    returns a list of readgroup dicts for the given bam
+    '''
+    
+    samfile = pysam.AlignmentFile(bam, "rb")
+    read_groups = samfile.header['RG']
+    samfile.close()
+    return read_groups
+
+
 ###### Config file and sample sheets #####
 configfile: "config.yaml"
 validate(config, schema="../schemas/config.schema.yaml")
@@ -23,7 +36,7 @@ d = { 'sample':[],
 for index, row in samples.iterrows():
     sample = row['sample']
     bam = row['bam']
-    readgroups = get_read_groups(bam)
+    readgroups = get_rg_from_bam(bam)
     for i in range(len(readgroups)):
         d['sample'].append(sample)
         d['bam'].append(bam)
@@ -44,17 +57,6 @@ wildcard_constraints:
 
 
 ##### Helper functions #####
-
-def get_read_groups(bam):
-    '''
-    (str) -> [dict]
-    returns a list of readgroup dicts for the given bam
-    '''
-    
-    samfile = pysam.AlignmentFile(bam, "rb")
-    read_groups = samfile.header['RG']
-    samfile.close()
-    return read_groups
 
 def get_start_bam(wildcards):
     """get input bam given sample-units"""
