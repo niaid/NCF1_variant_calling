@@ -40,7 +40,7 @@ for index, row in samples.iterrows():
     for i in range(len(readgroups)):
         d['sample'].append(sample)
         d['bam'].append(bam)
-        d['unit'].append(i+1)
+        d['unit'].append(str(i+1))
         d['ID'].append(readgroups[i]['ID'])
         d['LB'].append(readgroups[i]['LB'])
         d['PU'].append(readgroups[i]['PU'])
