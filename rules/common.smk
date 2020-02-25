@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 import pandas as pd
+import pysam
 from snakemake.utils import validate
 from snakemake.utils import min_version
 
@@ -26,6 +28,16 @@ wildcard_constraints:
 
 
 ##### Helper functions #####
+
+def get_read_groups(bam):
+    '''
+    (str) -> [dict]
+    returns a list of readgroup dicts for the given bam
+    '''
+    samfile = pysam.AlignmentFile(bam, "rb")
+    read_groups = samfile.header['RG']
+    samfile.close()
+    return read_groups
 
 def get_fai():
     return config["ref"]["genome"] + ".fai"
