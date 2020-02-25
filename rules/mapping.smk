@@ -1,6 +1,32 @@
+#!/usr/bin/env python
+
+rule subset_bam:
+    input:
+        get_start_bam
+    output:
+        bam = "subset/{sample}-{unit}.bam"
+    params:
+        get_rg_subset_param
+    log:
+        "logs/subset/{sample}.log"
+    wrapper:
+        "0.27.1/bio/samtools/view"
+
+rule samtofastq:
+    input:
+        "subset/{sample}-{unit}.bam"
+    output:
+        fastq1 = "samtofastq/{sample}-{unit}.1.fq",
+        fastq2 = "samtofastq/{sample}-{unit}.2.fq"
+    log:
+        "logs/picard/samtofastq/{sample}-{unit}.log"
+    wrapper:
+        "0.26.1/bio/picard/samtofastq"
+
 rule trim_reads_se:
     input:
-        unpack(get_fastq)
+        r1 = "samtofastq/{sample}-{unit}.1.fq",
+        r2 = "samtofastq/{sample}-{unit}.2.fq"
     output:
         temp("trimmed/{sample}-{unit}.fastq.gz")
     params:
@@ -10,7 +36,6 @@ rule trim_reads_se:
         "logs/trimmomatic/{sample}-{unit}.log"
     wrapper:
         "0.30.0/bio/trimmomatic/se"
-
 
 rule trim_reads_pe:
     input:

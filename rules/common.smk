@@ -17,6 +17,7 @@ validate(samples, schema="../schemas/samples.schema.yaml")
 d = { 'sample':[],
   'bam': [],
   'unit':[],
+  'ID': [],
   'LB':[],
   'PU': []}
 for index, row in samples.iterrows():
@@ -27,6 +28,7 @@ for index, row in samples.iterrows():
         d['sample'].append(sample)
         d['bam'].append(bam)
         d['unit'].append(i+1)
+        d['ID'].append(readgroups[i]['ID'])
         d['LB'].append(readgroups[i]['LB'])
         d['PU'].append(readgroups[i]['PU'])
 units = pd.DataFrame(data=d).set_index(["sample", "unit"], drop=False)
@@ -48,10 +50,22 @@ def get_read_groups(bam):
     (str) -> [dict]
     returns a list of readgroup dicts for the given bam
     '''
+    
     samfile = pysam.AlignmentFile(bam, "rb")
     read_groups = samfile.header['RG']
     samfile.close()
     return read_groups
+
+def get_start_bam(wildcards):
+    """get input bam given sample-units"""
+    return samples.loc[(wildcards.sample, wildcards.unit), ["bam"]].dropna().bam
+
+def get_rg_subset_param(wildcards):
+    """get the param to use for samtools view, namely the RG string"""
+    rg = samples.loc[(wildcards.sample, wildcards.unit), ["ID"]].dropna().ID
+    bed = config["processing"]["restrict-regions"]
+    return "-hbr " + rg + "-L " + bed
+
 
 def get_fai():
     return config["ref"]["genome"] + ".fai"
