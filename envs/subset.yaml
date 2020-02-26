@@ -2,4 +2,5 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - picard =2.18
+  - picard ==2.18.16
+  - samtools ==1.9
