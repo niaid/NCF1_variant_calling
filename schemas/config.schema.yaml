@@ -60,11 +60,11 @@ properties:
         properties:
           HaplotypeCaller:
             type: object
-	    properties:
-	      ploidy:
-	        type: string
-	      known:
-	        type: string
+            properties:
+              ploidy:
+                type: string
+              known:
+                type: string
           BaseRecalibrator:
             type: string
           GenotypeGVCFs:
