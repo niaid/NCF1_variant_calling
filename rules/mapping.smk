@@ -10,7 +10,7 @@ rule subset_bam:
     log:
         "logs/subset/{sample}-{unit}.log"
     wrapper:
-        "0.45.1/bio/samtools/view"
+        "0.49.0/bio/samtools/view"
 
 rule samtofastq:
     input:
@@ -21,7 +21,7 @@ rule samtofastq:
     log:
         "logs/picard/samtofastq/{sample}-{unit}.log"
     wrapper:
-        "0.26.1/bio/picard/samtofastq"
+        "0.49.0/bio/picard/samtofastq"
 
 rule trim_reads_se:
     input:
