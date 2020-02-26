@@ -39,8 +39,7 @@ rule trim_reads_se:
 
 rule trim_reads_pe:
     input:
-        r1 = "samtofastq/{sample}-{unit}.1.fq",
-        r2 = "samtofastq/{sample}-{unit}.2.fq"
+        get_bam_to_fastq
     output:
         r1=temp("trimmed/{sample}-{unit}.1.fastq.gz"),
         r2=temp("trimmed/{sample}-{unit}.2.fastq.gz"),
