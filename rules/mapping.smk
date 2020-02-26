@@ -7,8 +7,6 @@ rule subset_bam:
         bam = "subset/{sample}-{unit}.bam"
     params:
         get_rg_subset_param
-    log:
-        "logs/subset/{sample}-{unit}.log"
     wrapper:
         "0.49.0/bio/samtools/view"
 
