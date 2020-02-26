@@ -68,7 +68,7 @@ def get_start_bam(wildcards):
 
 def get_rg_subset_param(wildcards):
     """get the param to use for samtools view, namely the RG string"""
-    rg = samples.loc[(wildcards.sample, wildcards.unit), ["ID"]].dropna().ID
+    rg = units.loc[(wildcards.sample, wildcards.unit), ["ID"]].dropna().ID
     bed = config["processing"]["restrict-regions"]
     return "-hbr " + rg + "-L " + bed
 
