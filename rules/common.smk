@@ -78,9 +78,9 @@ def get_fai():
 
 
 # contigs in reference genome
+# changing to just use chromosome X. Should probably just remove the contigs concept entirely
 def get_contigs():
-    return pd.read_table(get_fai(),
-                         header=None, usecols=[0], squeeze=True, dtype=str)
+    return ['X']
 
 def get_fastq(wildcards):
     """Get fastq files of given sample-unit."""
