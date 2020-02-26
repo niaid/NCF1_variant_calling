@@ -10,7 +10,7 @@ rule subset_bam:
     log:
         "logs/subset/{sample}-{unit}.log"
     wrapper:
-        "0.27.1/bio/samtools/view"
+        "0.45.1/bio/samtools/view"
 
 rule samtofastq:
     input:
@@ -39,7 +39,8 @@ rule trim_reads_se:
 
 rule trim_reads_pe:
     input:
-        get_bam_to_fastq
+        r1 = "samtofastq/{sample}-{unit}.1.fq",
+        r2 = "samtofastq/{sample}-{unit}.2.fq"
     output:
         r1=temp("trimmed/{sample}-{unit}.1.fastq.gz"),
         r2=temp("trimmed/{sample}-{unit}.2.fastq.gz"),
