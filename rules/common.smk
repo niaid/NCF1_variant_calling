@@ -89,8 +89,10 @@ def get_fastq(wildcards):
 
 
 def is_single_end(sample, unit):
-    """Return True if sample-unit is single end."""
-    return pd.isnull(units.loc[(sample, unit), "fq2"])
+    """Return True if sample-unit is single end.
+    I'll always expect paired-end sequencing and just return false here.
+    """
+    return False
 
 
 def get_read_group(wildcards):
