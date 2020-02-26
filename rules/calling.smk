@@ -72,5 +72,5 @@ rule merge_methods:
     log:
         "logs/picard/merge-methods-genotyped.log"
     shell:
-        'cp {input[0]} {output}'
+        'cp {input[0]} {output};cp {input[0]}.tbi {output}.tbi'
 
