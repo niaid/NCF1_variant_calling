@@ -48,7 +48,7 @@ rule filter_sam_reads:
     conda:
         "../envs/subset.yaml"
     shell:
-        "java -jar picard.jar FilterSamReads I={input.bam} O={output} READ_LIST_FILE={input.txt} FILTER=filter_value"
+        "picard FilterSamReads I={input.bam} O={output} READ_LIST_FILE={input.txt} FILTER=filter_value"
 
 rule samtofastq:
     input:
