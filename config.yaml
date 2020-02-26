@@ -31,7 +31,11 @@ processing:
 
 params:
   gatk:
-    HaplotypeCaller: "-ploidy 4"
+    HaplotypeCaller:
+      ploidy:
+        "-ploidy 4"
+      known:
+        "-ploidy 4 --output-mode EMIT_ALL_SITES --genotyping-mode GENOTYPE_GIVEN_ALLELES --alleles /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf"
     BaseRecalibrator: ""
     GenotypeGVCFs: ""
     VariantRecalibrator: ""
