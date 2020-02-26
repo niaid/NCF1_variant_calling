@@ -8,6 +8,8 @@ min_version("5.7.1")
 
 report: "../report/workflow.rst"
 
+calling_methods = ['ploidy', 'known']
+
 ###### Function to parse bam file #####
 def get_rg_from_bam(bam):
     '''

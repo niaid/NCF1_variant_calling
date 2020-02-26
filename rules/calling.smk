@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 if "restrict-regions" in config["processing"]:
     rule compose_regions:
         input:
@@ -17,9 +18,9 @@ rule call_variants:
         known=config["ref"]["known-variants"],
         regions="called/{contig}.regions.bed" if config["processing"].get("restrict-regions") else []
     output:
-        gvcf=protected("called/{sample}.{contig}.g.vcf.gz")
+        gvcf=protected("called/{sample}.{method}.{contig}.g.vcf.gz")
     log:
-        "logs/gatk/haplotypecaller/{sample}.{contig}.log"
+        "logs/gatk/haplotypecaller/{sample}.{method}.{contig}.log"
     params:
         extra=get_call_variants_params
     wrapper:
@@ -29,11 +30,11 @@ rule call_variants:
 rule combine_calls:
     input:
         ref=config["ref"]["genome"],
-        gvcfs=expand("called/{sample}.{{contig}}.g.vcf.gz", sample=samples.index)
+        gvcfs=expand("called/{sample}.{{method}}.{{contig}}.g.vcf.gz", sample=samples.index)
     output:
-        gvcf="called/all.{contig}.g.vcf.gz"
+        gvcf="called/all.{method}.{contig}.g.vcf.gz"
     log:
-        "logs/gatk/combinegvcfs.{contig}.log"
+        "logs/gatk/combinegvcfs.{method}.{contig}.log"
     wrapper:
         "0.27.1/bio/gatk/combinegvcfs"
 
@@ -41,13 +42,13 @@ rule combine_calls:
 rule genotype_variants:
     input:
         ref=config["ref"]["genome"],
-        gvcf="called/all.{contig}.g.vcf.gz"
+        gvcf="called/all.{method}.{contig}.g.vcf.gz"
     output:
-        vcf=temp("genotyped/all.{contig}.vcf.gz")
+        vcf=temp("genotyped/all.{method}.{contig}.vcf.gz")
     params:
         extra=config["params"]["gatk"]["GenotypeGVCFs"]
     log:
-        "logs/gatk/genotypegvcfs.{contig}.log"
+        "logs/gatk/genotypegvcfs.{method}.{contig}.log"
     wrapper:
         "0.27.1/bio/gatk/genotypegvcfs"
 
@@ -55,10 +56,21 @@ rule genotype_variants:
 rule merge_variants:
     input:
         ref=get_fai(), # fai is needed to calculate aggregation over contigs below
-        vcfs=lambda w: expand("genotyped/all.{contig}.vcf.gz", contig=get_contigs()),
+        vcfs=lambda w: expand("genotyped/all.{{method}}.{contig}.vcf.gz", contig=get_contigs()),
     output:
-        vcf="genotyped/all.vcf.gz"
+        vcf="genotyped/all.{method}.vcf.gz"
     log:
-        "logs/picard/merge-genotyped.log"
+        "logs/picard/merge-genotyped.{method}.log"
     wrapper:
         "0.40.2/bio/picard/mergevcfs"
+
+rule merge_methods:
+    input:
+        expand("genotyped/all.{method}.vcf.gz", method=calling_methods)
+    output:
+        vcf="nemo_genotypes/all.vcf.gz"
+    log:
+        "logs/picard/merge-methods-genotyped.log"
+    shell:
+        'touch {output}'
+
