@@ -58,6 +58,6 @@ rule merge_variants:
     output:
         vcf="nemo_genotypes/all.vcf.gz"
     log:
-        "logs/picard/merge-genotyped.{method}.log"
+        "logs/picard/merge-genotyped.log"
     wrapper:
         "0.40.2/bio/picard/mergevcfs"
