@@ -31,4 +31,5 @@ scripts/.snakemake*
 !.test/config.yaml
 !report
 !report/*.rst
+!ClusterLogs
 !ClusterLogs/README
