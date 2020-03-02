@@ -35,7 +35,7 @@ params:
       ploidy:
         "-ploidy 4"
       known:
-        "-ploidy 4 --output-mode EMIT_ALL_SITES --genotyping-mode GENOTYPE_GIVEN_ALLELES --alleles /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf"
+        "-ploidy 4 --output-mode EMIT_ALL_SITES --genotyping-mode GENOTYPE_GIVEN_ALLELES --alleles /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz"
     BaseRecalibrator: ""
     GenotypeGVCFs: ""
     VariantRecalibrator: ""
