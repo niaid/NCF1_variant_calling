@@ -8,6 +8,10 @@ if "restrict-regions" in config["processing"]:
         shell:
             "cp {input} {output}"
 
+rule call_known_variants:
+    input:
+        bams = 
+
 
 rule call_variants:
     input:
