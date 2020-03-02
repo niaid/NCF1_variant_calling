@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 rule snpeff:
     input:
         "filtered/all.vcf.gz",
     output:
-        vcf=report("annotated/all.vcf.gz", caption="../report/vcf.rst", category="Calls"),
+        calls=report("annotated/all.vcf.gz", caption="../report/vcf.rst", category="Calls"),
         csvstats="snpeff/all.csv"
     log:
         "logs/snpeff.log"
@@ -10,4 +11,4 @@ rule snpeff:
         reference=config["ref"]["name"],
         extra="-Xmx6g"
     wrapper:
-        "0.27.1/bio/snpeff"
+        "0.49.0/bio/snpeff"
