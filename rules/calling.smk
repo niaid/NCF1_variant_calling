@@ -18,18 +18,11 @@ rule call_known_variants:
     output:
         vcf = "genotyped/known/all.vcf.gz"
     params:
-        extra = get_call_known_variants_params,
-        java_opts = ""
+        extra = get_call_known_variants_params
     conda:
         "../envs/gatk.yaml"
-    run:
-        known = "--dbsnp " + input.known
-        bams = list(map("-I {}".format, input.bams))
-        shell(
-            "gatk --java-options '{params.java_opts}' HaplotypeCaller {params.extra} "
-            "-R {input.ref} {bams} "
-            "-O {output.vcf} {known}"
-        )
+    script:
+        "scripts/known_sites.py"
     
 
 
