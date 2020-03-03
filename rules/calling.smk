@@ -22,7 +22,7 @@ rule call_known_variants:
     conda:
         "../envs/gatk.yaml"
     script:
-        "scripts/known_sites.py"
+        "../scripts/known_sites.py"
     
 
 
