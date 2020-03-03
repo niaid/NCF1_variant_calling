@@ -28,7 +28,7 @@ rule call_known_variants:
         shell(
             "gatk --java-options '{params.java_opts}' HaplotypeCaller {params.extra} "
             "-R {input.ref} {bams} "
-            "-O {output.vcf} {known} {log}"
+            "-O {output.vcf} {known}"
         )
     
 
@@ -70,7 +70,7 @@ rule genotype_variants:
     params:
         extra=config["params"]["gatk"]["GenotypeGVCFs"]
     log:
-        "logs/gatk/{method}/genotypegvcfs.log"
+        "logs/gatk/ploidy/genotypegvcfs.log"
     wrapper:
         "0.27.1/bio/gatk/genotypegvcfs"
 
