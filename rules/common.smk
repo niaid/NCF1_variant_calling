@@ -120,6 +120,14 @@ def get_sample_bams(wildcards):
                   sample=wildcards.sample,
                   unit=units.loc[wildcards.sample].unit)
 
+def get_all_sample_bams(wildcards):
+    """Get all aligned reads for all samples"""
+    bams = []
+    for s in samples.index:
+        bams += expand("recal/{sample}-{unit}.bam",
+                       sample=s,
+                       unit=units.loc[s].unit)
+    return bams
 
 def get_regions_param(regions=config["processing"].get("restrict-regions"), default=""):
     if regions:
@@ -131,10 +139,14 @@ def get_regions_param(regions=config["processing"].get("restrict-regions"), defa
     return default
 
 
-def get_call_variants_params(wildcards, input):
+def get_call_ploidy_variants_params(wildcards, input):
     return (get_regions_param(regions=input.regions, default="--intervals {}".format("X")) +
-            config["params"]["gatk"]["HaplotypeCaller"][wildcards.method])
+            config["params"]["gatk"]["HaplotypeCaller"]["ploidy"])
 
+
+def get_call_known_variants_params(wildcards, input):
+    return (get_regions_param(regions=input.regions, default="--intervals {}".format("X")) +
+            config["params"]["gatk"]["HaplotypeCaller"]["known"])
 
 def get_recal_input(bai=False):
     # case 1: no duplicate removal

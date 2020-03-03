@@ -1,5 +1,6 @@
 samples: samples.tsv
 units: units.tsv
+known_sites: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
 
 ref:
   name: GRCh37.75
