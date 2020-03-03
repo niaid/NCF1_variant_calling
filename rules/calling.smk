@@ -19,11 +19,12 @@ rule call_known_variants:
         vcf = "genotyped/known/all.vcf.gz"
     params:
         extra = get_call_known_variants_params
+    log:
+        "logs/gatk/haplotypecaller/known/all.known_sites.log"
     conda:
         "../envs/gatk.yaml"
     script:
         "../scripts/known_sites.py"
-    
 
 
 rule call_variants:
