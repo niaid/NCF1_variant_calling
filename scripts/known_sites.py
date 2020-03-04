@@ -17,5 +17,5 @@ log = snakemake.log_fmt_shell(stdout=True, stderr=True)
 shell(
     "gatk3 {java_opts} -T HaplotypeCaller {extra} "
     "-R {snakemake.input.ref} {bams} "
-    "-O {snakemake.output.vcf} {known} {log}"
+    "-o {snakemake.output.vcf} {known} {log}"
 )
