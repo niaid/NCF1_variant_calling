@@ -182,13 +182,13 @@ def get_diploid(gt):
 def make_diploid_vcf(in_vcf_gz, out_vcf):
     with gzip.open(in_vcf_gz) as f, open(out_vcf, 'w') as out:
         line = f.readline()
-        while not line.startswith(b'#CHROM') and line != '':
-            out.write(line)
+        while not line.decode().startswith('#CHROM') and line.decode() != '':
+            out.write(line.decode())
             line = f.readline()
-        out.write(line)
+        out.write(line.decode())
         line = f.readline()
-        while line != '':
-            line_list = line.split()
+        while line.decode() != '':
+            line_list = line.decode().split()
             genotypes = line_list[9:]
             new_genotypes = []
             for geno in genotypes:
