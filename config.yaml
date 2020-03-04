@@ -8,6 +8,7 @@ ref:
   genome: /hpcdata/bcbb/karlinser/Projects/NEMO/mask_fasta/human_g1k_v37_decoy_IKBKGP1_masked.fasta
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
   known-variants: /hpcdata/bio_data/current/GATK/bundle/2.8/b37/dbsnp_138.b37.vcf.gz
+  gatk3_jar: /sysapps/cluster/software/GATK/3.8.1-Java-1.8.0_92/GenomeAnalysisTK.jar
 
 filtering:
   # Set to true in order to apply machine learning based recalibration of

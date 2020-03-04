@@ -8,8 +8,19 @@ if "restrict-regions" in config["processing"]:
         shell:
             "cp {input} {output}"
 
+rule register_gatk3:
+    input:
+        jar = config["ref"]["gatk3_jar"]
+    output:
+        touch(".gatk-registered")
+    conda:
+        "../envs/gatk.yaml"
+    shell:
+        "gatk3-register {input.jar}"
+
 rule call_known_variants:
     input:
+        gatk_registered = ".gatk-registered"
         bams = get_all_sample_bams,
         ref=config["ref"]["genome"],
         known=config["ref"]["known-variants"],
