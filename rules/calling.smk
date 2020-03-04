@@ -71,7 +71,7 @@ rule genotype_variants:
         ref=config["ref"]["genome"],
         gvcf="called/ploidy/all.g.vcf.gz"
     output:
-        vcf=temp("genotyped/ploidy/all.vcf.gz")
+        vcf="genotyped/ploidy/all.vcf.gz"
     params:
         extra=config["params"]["gatk"]["GenotypeGVCFs"]
     log:
@@ -79,11 +79,18 @@ rule genotype_variants:
     wrapper:
         "0.27.1/bio/gatk/genotypegvcfs"
 
+rule make_diploid_variants:
+    input:
+        vcf="genotyped/{method}/all.vcf.gz"
+    output:
+        vcf="diploid/{method}/all.vcf"
+    run:
+        make_diploid_vcf(input.vcf, output.vcf)
 
 rule merge_variants:
     input:
         ref=get_fai(), # fai is needed to calculate aggregation over contigs below
-        vcfs=lambda w: expand("genotyped/{method}/all.vcf.gz", method = calling_methods),
+        vcfs=lambda w: expand("diploid/{method}/all.vcf", method = calling_methods),
     output:
         vcf="nemo_genotypes/all.vcf.gz"
     log:

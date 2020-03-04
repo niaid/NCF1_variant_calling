@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import pandas as pd
 import pysam
+import gzip
 from snakemake.utils import validate
 from snakemake.utils import min_version
 
@@ -164,3 +165,38 @@ def get_recal_input(bai=False):
             return []
     else:
         return f
+
+
+
+def get_diploid(gt):
+    gt_list = sorted(set(gt.split('/')))
+    if len(gt_list) == 1:
+        a = gt_list[0]
+        return a + '/' + a
+    elif len(gt_list) == 2:
+        return '/'.join(gt_list)
+    else:
+        print('can not make diploid: ' + gt)
+        return './.'
+    
+def make_diploid_vcf(in_vcf_gz, out_vcf):
+    with gzip.open(in_vcf_gz) as f, open(out_vcf, 'w') as out:
+        line = f.readline()
+        while not line.startswith('#CHROM') and line != '':
+            out.write(line)
+            line = f.readline()
+        out.write(line)
+        line = f.readline()
+        while line != '':
+            line_list = line.split()
+            genotypes = line_list[9:]
+            new_genotypes = []
+            for geno in genotypes:
+                geno_list = geno.split(':')
+                gt = geno_list[0]
+                dip_gt = get_diploid(gt)
+                geno_list[0] = dip_gt
+                new_genotypes.append(':'.join(geno_list))
+            line_list[9:] = new_genotypes
+            out.write('\t'.join(line_list) + '\n')
+            line = f.readline()
