@@ -182,7 +182,7 @@ def get_diploid(gt):
 def make_diploid_vcf(in_vcf_gz, out_vcf):
     with gzip.open(in_vcf_gz) as f, open(out_vcf, 'w') as out:
         line = f.readline()
-        while not line.startswith('#CHROM') and line != '':
+        while not line.startswith(b'#CHROM') and line != '':
             out.write(line)
             line = f.readline()
         out.write(line)
