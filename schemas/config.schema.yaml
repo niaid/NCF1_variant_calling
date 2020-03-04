@@ -85,7 +85,6 @@ properties:
           - MarkDuplicates
     required:
       - gatk
-      - gatk3
       - picard
 
 required:
