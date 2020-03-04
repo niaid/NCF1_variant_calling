@@ -15,7 +15,7 @@ bams = list(map("-I {}".format, bams))
 
 log = snakemake.log_fmt_shell(stdout=True, stderr=True)
 shell(
-    "gatk --java-options '{java_opts}' HaplotypeCaller {extra} "
+    "gatk3 {java_opts} -T HaplotypeCaller {extra} "
     "-R {snakemake.input.ref} {bams} "
     "-O {snakemake.output.vcf} {known} {log}"
 )
