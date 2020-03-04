@@ -20,7 +20,7 @@ rule register_gatk3:
 
 rule call_known_variants:
     input:
-        gatk_registered = ".gatk-registered"
+        gatk_registered = ".gatk-registered",
         bams = get_all_sample_bams,
         ref=config["ref"]["genome"],
         known=config["ref"]["known-variants"],
