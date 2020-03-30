@@ -87,10 +87,34 @@ rule make_diploid_variants:
     run:
         make_diploid_vcf(input.vcf, output.vcf)
 
+rule filter_unique_variants:
+    input:
+        known = "diploid/known/all.vcf",
+        ploidy = "diploid/ploidy/all.vcf"
+    output:
+        vcf = "filter_unique/ploidy.vcf"
+    run:
+        known_variant_dict = {}
+        with open(input.known) as f:
+            for line in f:
+                if line[0] != '#':
+                    line_list = line.split()
+                    (chrom, pos, x, ref, alt) = line_list[:5]
+                    known_variant_dict[(chrom, pos, ref, alt)] = 1
+        with open(input.ploidy) as f, open(output.vcf, 'w') as out:
+            for line in f:
+                if line[0] != '#':
+                    line_list = line.split()
+                    (chrom, pos, x, ref, alt) = line_list[:5]
+                    if not known_variant_dict.get((chrom, pos, ref, alt)):
+                        out.write(line)
+                else:
+                    out.write(line)
+
 rule merge_variants:
     input:
         ref=get_fai(), # fai is needed to calculate aggregation over contigs below
-        vcfs=lambda w: expand("diploid/{method}/all.vcf", method = calling_methods),
+        vcfs= ["filter_unique/ploidy.vcf", "diploid/known/all.vcf"]
     output:
         vcf="nemo_genotypes/all.vcf.gz"
     log:
