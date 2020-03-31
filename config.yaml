@@ -1,17 +1,19 @@
 samples: samples.tsv
 units: units.tsv
+known_sites: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
 
 ref:
-  name: GRCh37_IKBKGP1_masked
+  name: GRCh37.75
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
   genome: /hpcdata/bcbb/karlinser/Projects/NEMO/mask_fasta/human_g1k_v37_decoy_IKBKGP1_masked.fasta
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
   known-variants: /hpcdata/bio_data/current/GATK/bundle/2.8/b37/dbsnp_138.b37.vcf.gz
+  gatk3_jar: /sysapps/cluster/software/GATK/3.8.1-Java-1.8.0_92/GenomeAnalysisTK.jar
 
 filtering:
   # Set to true in order to apply machine learning based recalibration of
   # quality scores instead of hard filtering.
-  vqsr: true
+  vqsr: false
   hard:
     # hard filtering as outlined in GATK docs
     # (https://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set)
@@ -31,7 +33,11 @@ processing:
 
 params:
   gatk:
-    HaplotypeCaller: ""
+    HaplotypeCaller:
+      ploidy:
+        "-ploidy 4"
+      known:
+        "-ploidy 4 --output_mode EMIT_ALL_SITES --genotyping_mode GENOTYPE_GIVEN_ALLELES --alleles /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz"
     BaseRecalibrator: ""
     GenotypeGVCFs: ""
     VariantRecalibrator: ""

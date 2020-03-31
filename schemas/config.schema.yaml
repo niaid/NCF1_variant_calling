@@ -59,7 +59,12 @@ properties:
         type: object
         properties:
           HaplotypeCaller:
-            type: string
+            type: object
+            properties:
+              ploidy:
+                type: string
+              known:
+                type: string
           BaseRecalibrator:
             type: string
           GenotypeGVCFs:

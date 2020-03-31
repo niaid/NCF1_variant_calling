@@ -6,7 +6,7 @@ def get_vartype_arg(wildcards):
 rule select_calls:
     input:
         ref=config["ref"]["genome"],
-        vcf="genotyped/all.vcf.gz"
+        vcf="nemo_genotypes/all.vcf.gz"
     output:
         vcf=temp("filtered/all.{vartype}.vcf.gz")
     params:

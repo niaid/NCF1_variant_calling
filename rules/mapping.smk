@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+
 rule trim_reads_se:
     input:
-        unpack(get_fastq)
+        r1 = "samtofastq/{sample}-{unit}.1.fq",
+        r2 = "samtofastq/{sample}-{unit}.2.fq"
     output:
         temp("trimmed/{sample}-{unit}.fastq.gz")
     params:
@@ -11,10 +14,10 @@ rule trim_reads_se:
     wrapper:
         "0.30.0/bio/trimmomatic/se"
 
-
 rule trim_reads_pe:
     input:
-        unpack(get_fastq)
+        r1 = "samtofastq/{sample}-{unit}.1.fq",
+        r2 = "samtofastq/{sample}-{unit}.2.fq"
     output:
         r1=temp("trimmed/{sample}-{unit}.1.fastq.gz"),
         r2=temp("trimmed/{sample}-{unit}.2.fastq.gz"),

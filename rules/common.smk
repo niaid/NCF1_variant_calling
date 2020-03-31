@@ -1,4 +1,7 @@
+#!/usr/bin/env python
 import pandas as pd
+import pysam
+import gzip
 from snakemake.utils import validate
 from snakemake.utils import min_version
 
@@ -6,14 +9,47 @@ min_version("5.7.1")
 
 report: "../report/workflow.rst"
 
+calling_methods = ['ploidy', 'known']
+
+###### Function to parse bam file #####
+def get_rg_from_bam(bam):
+    '''
+    (str) -> [dict]
+    returns a list of readgroup dicts for the given bam
+    '''
+    
+    samfile = pysam.AlignmentFile(bam, "rb")
+    read_groups = samfile.header['RG']
+    samfile.close()
+    return read_groups
+
+
 ###### Config file and sample sheets #####
 configfile: "config.yaml"
 validate(config, schema="../schemas/config.schema.yaml")
 
 samples = pd.read_table(config["samples"]).set_index("sample", drop=False)
 validate(samples, schema="../schemas/samples.schema.yaml")
-
-units = pd.read_table(config["units"], dtype=str).set_index(["sample", "unit"], drop=False)
+d = { 'sample':[],
+  'bam': [],
+  'unit':[],
+  'ID': [],
+  'LB':[],
+  'platform':[],
+  'PU': []}
+for index, row in samples.iterrows():
+    sample = row['sample']
+    bam = row['bam']
+    readgroups = get_rg_from_bam(bam)
+    for i in range(len(readgroups)):
+        d['sample'].append(sample)
+        d['bam'].append(bam)
+        d['unit'].append(str(i+1))
+        d['ID'].append(readgroups[i]['ID'])
+        d['LB'].append(readgroups[i]['LB'])
+        d['PU'].append(readgroups[i]['PU'])
+        d['platform'].append('ILLUMINA')
+units = pd.DataFrame(data=d).set_index(["sample", "unit"], drop=False)
 units.index = units.index.set_levels([i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="../schemas/units.schema.yaml")
 
@@ -27,14 +63,25 @@ wildcard_constraints:
 
 ##### Helper functions #####
 
+def get_start_bam(wildcards):
+    """get input bam given sample-units"""
+    return samples.loc[(wildcards.sample, wildcards.unit), ["bam"]].dropna().bam
+
+def get_rg_subset_param(wildcards):
+    """get the param to use for samtools view, namely the RG string"""
+    rg = units.loc[(wildcards.sample, wildcards.unit), ["ID"]].dropna().ID
+    bed = config["processing"]["restrict-regions"]
+    return "-F 4 -f 2 -hbr " + rg + " -L " + bed
+
+
 def get_fai():
     return config["ref"]["genome"] + ".fai"
 
 
 # contigs in reference genome
+# changing to just use chromosome X. Should probably just remove the contigs concept entirely
 def get_contigs():
-    return pd.read_table(get_fai(),
-                         header=None, usecols=[0], squeeze=True, dtype=str)
+    return ['X']
 
 def get_fastq(wildcards):
     """Get fastq files of given sample-unit."""
@@ -45,8 +92,10 @@ def get_fastq(wildcards):
 
 
 def is_single_end(sample, unit):
-    """Return True if sample-unit is single end."""
-    return pd.isnull(units.loc[(sample, unit), "fq2"])
+    """Return True if sample-unit is single end.
+    I'll always expect paired-end sequencing and just return false here.
+    """
+    return False
 
 
 def get_read_group(wildcards):
@@ -72,6 +121,14 @@ def get_sample_bams(wildcards):
                   sample=wildcards.sample,
                   unit=units.loc[wildcards.sample].unit)
 
+def get_all_sample_bams(wildcards):
+    """Get all aligned reads for all samples"""
+    bams = []
+    for s in samples.index:
+        bams += expand("recal/{sample}-{unit}.bam",
+                       sample=s,
+                       unit=units.loc[s].unit)
+    return bams
 
 def get_regions_param(regions=config["processing"].get("restrict-regions"), default=""):
     if regions:
@@ -83,10 +140,14 @@ def get_regions_param(regions=config["processing"].get("restrict-regions"), defa
     return default
 
 
-def get_call_variants_params(wildcards, input):
-    return (get_regions_param(regions=input.regions, default="--intervals {}".format(wildcards.contig)) +
-            config["params"]["gatk"]["HaplotypeCaller"])
+def get_call_ploidy_variants_params(wildcards, input):
+    return (get_regions_param(regions=input.regions, default="--intervals {}".format("X")) +
+            config["params"]["gatk"]["HaplotypeCaller"]["ploidy"])
 
+
+def get_call_known_variants_params(wildcards, input):
+    return (get_regions_param(regions=input.regions, default="--intervals {}".format("X")) +
+            config["params"]["gatk"]["HaplotypeCaller"]["known"])
 
 def get_recal_input(bai=False):
     # case 1: no duplicate removal
@@ -104,3 +165,38 @@ def get_recal_input(bai=False):
             return []
     else:
         return f
+
+
+
+def get_diploid(gt):
+    gt_list = sorted(set(gt.split('/')))
+    if len(gt_list) == 1:
+        a = gt_list[0]
+        return a + '/' + a
+    elif len(gt_list) == 2:
+        return '/'.join(gt_list)
+    else:
+        print('can not make diploid: ' + gt)
+        return './.'
+    
+def make_diploid_vcf(in_vcf_gz, out_vcf):
+    with gzip.open(in_vcf_gz) as f, open(out_vcf, 'w') as out:
+        line = f.readline()
+        while not line.decode().startswith('#CHROM') and line.decode() != '':
+            out.write(line.decode())
+            line = f.readline()
+        out.write(line.decode())
+        line = f.readline()
+        while line.decode() != '':
+            line_list = line.decode().split()
+            genotypes = line_list[9:]
+            new_genotypes = []
+            for geno in genotypes:
+                geno_list = geno.split(':')
+                gt = geno_list[0]
+                dip_gt = get_diploid(gt)
+                geno_list[0] = dip_gt
+                new_genotypes.append(':'.join(geno_list))
+            line_list[9:] = new_genotypes
+            out.write('\t'.join(line_list) + '\n')
+            line = f.readline()
