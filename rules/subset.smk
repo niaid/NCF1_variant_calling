@@ -47,13 +47,16 @@ rule filter_sam_reads:
         "subset_paired/{sample}-{unit}.bam"
     conda:
         "../envs/subset.yaml"
-    run:
-        with open(input.txt) as f:
-            line = f.readline()
-        if line == '':
-            shell("cp {input.bam} {output}")
-        else:
-            shell("picard FilterSamReads I={input.bam} O={output} READ_LIST_FILE={input.txt} FILTER=includeReadList")
+    shell:
+        """
+        input_txt=({input.txt})
+        LEN=`wc -l $input_txt | cut -f1 -d " "`
+        if [ $LEN -eq 0 ]; then
+             cp {input.bam} {output}
+        else
+            picard FilterSamReads I={input.bam} O={output} READ_LIST_FILE={input.txt} FILTER=includeReadList
+        fi
+        """
 
 rule samtofastq:
     input:
