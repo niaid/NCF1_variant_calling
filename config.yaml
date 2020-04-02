@@ -51,6 +51,7 @@ params:
         - "TRAILING:3"
         - "SLIDINGWINDOW:4:15"
         - "MINLEN:36"
+        - "-phred33"
     se:
       trimmer:
         # See trimmomatic manual for adding additional options, e.g. for adapter trimming.
