@@ -6,8 +6,7 @@ rule vcf_to_tsv:
     conda:
         "../envs/rbt.yaml"
     shell:
-        "bcftools view --max-alleles 2 --apply-filters PASS --output-type u {input} | "
-        "rbt vcf-to-txt -g --fmt DP AD --info ANN | "
+        "bcftools query -H -f '%CHROM  %POS  %REF  %ALT %QUAL %ANN [ %GT] [ %DP] [ %AD]\n' {input} | "
         "gzip > {output}"
 
 
