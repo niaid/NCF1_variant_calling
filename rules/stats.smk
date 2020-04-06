@@ -7,7 +7,8 @@ rule vcf_to_tsv:
         "../envs/rbt.yaml"
     shell:
         "bcftools view --apply-filters PASS --output-type u {input} | "
-        "rbt vcf-to-txt -g --fmt DP AD --info ANN --max-alleles 2 | "
+        "bcftools norm -m -both --output-type u - | "
+        "rbt vcf-to-txt -g --fmt DP AD --info ANN | "
         "gzip > {output}"
 
 
