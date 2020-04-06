@@ -31,11 +31,11 @@ rule update_tsv_header:
                 else:
                     new_head1.append(fields[0])
                     new_head2.append(fields[1])
-            out.write('\t'.join(new_head1) + '\n')
-            out.write('\t'.join(new_head2) + '\n')
+            out.write(('\t'.join(new_head1) + '\n').encode('utf-8'))
+            out.write(('\t'.join(new_head2) + '\n').encode('utf-8'))
             line = f.readline()
             while line.decode() != '':
-                out.write(line.decode())
+                out.write(line)
                 line = f.readline()
 
 
