@@ -6,7 +6,7 @@ rule vcf_to_tsv:
     conda:
         "../envs/rbt.yaml"
     shell:
-        "bcftools query -H -f '%CHROM  %POS  %REF  %ALT %QUAL %ANN [ %GT] [ %DP] [ %AD]\n' {input} | "
+        "bcftools query -H -f '%CHROM\t%POS\t%REF\t%ALT\t%QUAL\t%ANN\t[ %GT]\t[ %DP]\t[ %AD]\n' {input} | "
         "gzip > {output}"
 
 
