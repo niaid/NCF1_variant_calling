@@ -50,7 +50,7 @@ rule update_tsv:
                     for annotation in annotations:
                         annotCol = sampToColsDict[samp][annotation]
                         annot_field = line_list[annotCol]
-                        if annotation = 'AD':
+                        if annotation == 'AD':
                             annot_field = annot_field.split(',')[1]
                         new_line_list.append(annot_field)
                 out.write(('\t'.join(new_line_list) + '\n').encode('utf-8'))
