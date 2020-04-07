@@ -51,7 +51,13 @@ rule update_tsv:
                         annotCol = sampToColsDict[samp][annotation]
                         annot_field = line_list[annotCol]
                         if annotation == 'AD':
-                            annot_field = annot_field.split(',')[1]
+                            if annot_field == '.':
+                                annot_field = '0'
+                            else:
+                                annot_field = annot_field.split(',')[1]
+                        elif annotation == 'DP':
+                            if annot_field == '.':
+                                annot_field = '0'
                         new_line_list.append(annot_field)
                 out.write(('\t'.join(new_line_list) + '\n').encode('utf-8'))
                 line = f.readline()
