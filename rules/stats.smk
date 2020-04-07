@@ -49,7 +49,10 @@ rule update_tsv:
                 for samp in sorted(sampToColsDict.keys()):
                     for annotation in annotations:
                         annotCol = sampToColsDict[samp][annotation]
-                        new_line_list.append(line_list[annotCol])
+                        annot_field = line_list[annotCol]
+                        if annotation = 'AD':
+                            annot_field = annot_field.split(',')[1]
+                        new_line_list.append(annot_field)
                 out.write(('\t'.join(new_line_list) + '\n').encode('utf-8'))
                 line = f.readline()
 
