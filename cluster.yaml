@@ -1,0 +1,9 @@
+__default__:
+    threads: 1
+    mem_gb: 10
+genotype_variants:
+    threads: 16
+    mem_gb: 15
+vcf_to_tsv:
+    threads: 16
+    mem_gb: 15
