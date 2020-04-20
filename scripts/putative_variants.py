@@ -1,4 +1,9 @@
+#!/usr/bin/env python2.7
+
 import pysam
+import sys
+import argparse
+
 
 def get_ref_base(chrom, position, pysamFa):
     for base in pysamFa.fetch(chrom, position - 1, position):
@@ -97,3 +102,28 @@ def output_vcf(vcf_header, out_vcf, samfile, chrom, start, end, min_alt):
                 else:
                     output.write('\t'.join([chrom, str(pos), '.', ref_base, alt, '.', '.', '.']) + '\n')
 
+
+
+def get_args():
+    '''
+    return the arguments from parser
+    '''
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-b', '--bam', type=str, required=True, help='REQUIRED. Path to bam file')
+    parser.add_argument('-o', '--out', type=str, required=True, help='REQUIRED. Path to output vcf file')
+    parser.add_argument('-c', '--chrom', type=str, required=True, help='REQUIRED. Chromosome')
+    parser.add_argument('-s', '--start', type=int, required=True, help='REQUIRED. Start position')
+    parser.add_argument('-e', '--end', type=int, required=True, help='REQUIRED. End position')
+    parser.add_argument('-m', '--min_alt', type=int, required=True, default=2, help='REQUIRED. Default = 2. Minimum number of ALT alleles to emit a variant position.')
+    args = parser.parse_args()
+    return args
+
+
+def main():
+    args = get_args()
+    samfile = pysam.AlignmentFile(args.bam, 'rb')
+    output_vcf(vcf_header, args.out, samfile, args.chrom, args.start, args.end, args.min_alt)
+
+
+if __name__ == "__main__":
+    main()
