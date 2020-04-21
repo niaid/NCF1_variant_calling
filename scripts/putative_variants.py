@@ -132,7 +132,7 @@ def main():
     args = get_args()
     samfile = pysam.AlignmentFile(args.bam, 'rb')
     vcf_header = get_vcf_header(args.vcf)
-    output_vcf(vcf_header, args.out, samfile, args.chrom, args.start, args.end, args.min_alt)
+    output_vcf(vcf_header, args.out, samfile, args.reference, args.chrom, args.start, args.end, args.min_alt)
 
 
 if __name__ == "__main__":
