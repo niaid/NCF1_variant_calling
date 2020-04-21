@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 if "restrict-regions" in config["processing"]:
     rule compose_regions:
         input:
@@ -17,6 +18,58 @@ rule register_gatk3:
         "../envs/gatk.yaml"
     shell:
         "gatk3-register {input.jar}"
+
+if config["deep-discovery"] == "YES":
+    rule call_putative_variants:
+        input:
+            bam = "merge_recal/{sample}.bam",
+            ref=config["ref"]["genome"],
+            vcf = config["ref"]["known-variants"]
+        output:
+            "putative_variants/{sample}.vcf"
+        params:
+            chrom = config["params"]["deep-discovery"]["chrom"],
+            start = config["params"]["deep-discovery"]["start"],
+            end = config["params"]["deep-discovery"]["end"],
+            min_alt = config["params"]["deep-discovery"]["min_alt"]
+        conda:
+            "../envs/putative.yaml"
+        shell:
+            "python scripts/putative_variants.py -b {input.bam} -o {output} -v {input.vcf} "
+            "-R {input.ref} -c {params.chrom} -s {params.start} -e {params.end} -m {params.min_alt}"
+    rule merge_putative_variants:
+        input:
+            expand("putative_variants/{sample}.vcf", sample=samples.index)
+        output:
+            "combined_putative/all.vcf"
+        run:
+            def get_vcf_header(vcf):
+                vcf_header = ''
+                with open(vcf) as f:
+                    line = f.readline()
+                    while not line.startswith('#CHROM'):
+                        vcf_header += line
+                        line = f.readline()
+                    vcf_header += '#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n'
+                return vcf_header
+
+            vcf_header = get_vcf_header(input[0])
+            variant_dict = {}
+            for vcf in input:
+                with open(vcf) as f:
+                    head = f.readline()
+                    while not line.startswith('#CHROM') and line != '':
+                        head = f.readline()
+                    line = f.readline()
+                    while line != '':
+                        pos = int(line.split()[1])
+                        variant_dict[pos] = line
+                        line = f.readline()
+            with open(output[0], 'w') as out:
+                out.write(vcf_header)
+                for pos in sorted(variant_dict.keys()):
+                    line = variant_dict[pos]
+                    out.write(line)
 
 rule call_known_variants:
     input:
