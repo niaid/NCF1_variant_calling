@@ -70,6 +70,26 @@ if config["deep-discovery"] == "YES":
                 for pos in sorted(variant_dict.keys()):
                     line = variant_dict[pos]
                     out.write(line)
+        rule zip_putative:
+            input:
+                "combined_putative/all.vcf"
+            output:
+                vcf = "known_sites/putative/all.vcf.gz",
+                tbi = "known_sites/putative/all.vcf.gz.tbi"
+            shell:
+                "bgzip {input};tabix -p vcf {output.vcf}"
+
+if config["use-known-sites"] == "YES":
+    rule copy_known_sites:
+        input:
+            vcf = config["known_sites"],
+            tbi = config["known_sites"] + ".tbi"
+        output:
+            vcf = "known_sites/known/all.vcf.gz",
+            tbi = "known_sites/known/all.vcf.gz.tbi"
+        shell:
+            "cp {input.vcf} {output.vcf};cp {input.tbi} {output.tbi}"
+
 
 rule call_known_variants:
     input:
@@ -78,13 +98,13 @@ rule call_known_variants:
         ref=config["ref"]["genome"],
         known=config["ref"]["known-variants"],
         regions="called/regions.bed",
-        known_sites = config["known_sites"]
+        known_sites = "known_sites/{known}/all.vcf.gz"
     output:
-        vcf = "genotyped/known/all.vcf.gz"
+        vcf = "genotyped/{known}/all.vcf.gz"
     params:
         extra = get_call_known_variants_params
     log:
-        "logs/gatk/haplotypecaller/known/all.known_sites.log"
+        "logs/gatk/haplotypecaller/{known}/all.known_sites.log"
     conda:
         "../envs/gatk.yaml"
     script:
@@ -140,20 +160,27 @@ rule make_diploid_variants:
     run:
         make_diploid_vcf(input.vcf, output.vcf)
 
+rule all_variant_vcf:
+    input:
+        vcfs = expand("diploid/{method}/all.vcf", method = methods)
+    output:
+        "diploid/all_variant.vcf"
+
 rule filter_unique_variants:
     input:
-        known = "diploid/known/all.vcf",
-        ploidy = "diploid/ploidy/all.vcf"
+        all_variant = "diploid/all_variant.vcf",
+        vcf = "diploid/{method}/all.vcf"
     output:
-        vcf = "filter_unique/ploidy.vcf"
+        vcf = "filter_unique/{method}.vcf"
     run:
         known_variant_dict = {}
-        with open(input.known) as f:
-            for line in f:
-                if line[0] != '#':
-                    line_list = line.split()
-                    (chrom, pos, x, ref, alt) = line_list[:5]
-                    known_variant_dict[(chrom, pos, ref, alt)] = 1
+        for vcf in input.known_vcfs:
+            with open(vcf) as f:
+                for line in f:
+                    if line[0] != '#':
+                        line_list = line.split()
+                        (chrom, pos, x, ref, alt) = line_list[:5]
+                        known_variant_dict[(chrom, pos, ref, alt)] = 1
         with open(input.ploidy) as f, open(output.vcf, 'w') as out:
             for line in f:
                 if line[0] != '#':
