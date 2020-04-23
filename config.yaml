@@ -52,6 +52,7 @@ params:
     start: 153788571
     end: 32008435
     min_alt: 2
+    vcf_for_header: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
   picard:
     MarkDuplicates: "REMOVE_DUPLICATES=true"
   trimmomatic:

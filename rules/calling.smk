@@ -23,7 +23,7 @@ rule call_putative_variants:
     input:
         bam = "merge_recal/{sample}.bam",
         ref = config["ref"]["genome"],
-        vcf = config["focused-genotyping"]["vcf_for_header"]
+        vcf = config["params"]["putative"]["vcf_for_header"]
     output:
         "putative_variants/{sample}.vcf"
     params:
