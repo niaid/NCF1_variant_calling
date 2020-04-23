@@ -9,12 +9,6 @@ min_version("5.7.1")
 
 report: "../report/workflow.rst"
 
-calling_methods = ["ploidy"]
-if config["focused-genotyping"]["known_sites"]:
-    calling_methods.append("known")
-if config["focused-genotyping"]["putative"]:
-    calling_methods.append("putative")
-
 ###### Function to parse bam file #####
 def get_rg_from_bam(bam):
     '''
@@ -56,6 +50,15 @@ for index, row in samples.iterrows():
 units = pd.DataFrame(data=d).set_index(["sample", "unit"], drop=False)
 units.index = units.index.set_levels([i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="../schemas/units.schema.yaml")
+
+
+
+calling_methods = ["ploidy"]
+if config["focused-genotyping"]["known_sites"]:
+    calling_methods.append("known")
+if config["focused-genotyping"]["putative"]:
+    calling_methods.append("putative")
+
 
 
 ##### Wildcard constraints #####
