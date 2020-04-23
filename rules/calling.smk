@@ -56,10 +56,10 @@ rule merge_putative_variants:
         vcf_header = get_vcf_header(input[0])
         variant_dict = {}
         for vcf in input:
-        with open(vcf) as f:
-            head = f.readline()
-            while not line.startswith('#CHROM') and line != '':
+            with open(vcf) as f:
                 head = f.readline()
+                while not line.startswith('#CHROM') and line != '':
+                    head = f.readline()
                 line = f.readline()
                 while line != '':
                     pos = int(line.split()[1])
