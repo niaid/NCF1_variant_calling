@@ -27,68 +27,70 @@ rule call_putative_variants:
         output:
             "putative_variants/{sample}.vcf"
         params:
-            chrom = config["focused-genotyping"]["chrom"],
-            start = config["focused-genotyping"]["start"],
-            end = config["focused-genotyping"]["end"],
-            min_alt = config["focused-genotyping"]["min_alt"]
+            chrom = config["params"]["putative"]["chrom"],
+            start = config["params"]["putative"]["start"],
+            end = config["params"]["putative"]["end"],
+            min_alt = config["params"]["putative"]["min_alt"]
         conda:
             "../envs/putative.yaml"
         shell:
             "python scripts/putative_variants.py -b {input.bam} -o {output} -v {input.vcf} "
             "-R {input.ref} -c {params.chrom} -s {params.start} -e {params.end} -m {params.min_alt}"
-    rule merge_putative_variants:
-        input:
-            expand("putative_variants/{sample}.vcf", sample=samples.index)
-        output:
-            "combined_putative/all.vcf"
-        run:
-            def get_vcf_header(vcf):
-                vcf_header = ''
-                with open(vcf) as f:
+
+rule merge_putative_variants:
+    input:
+        expand("putative_variants/{sample}.vcf", sample=samples.index)
+    output:
+        "combined_putative/all.vcf"
+    run:
+        def get_vcf_header(vcf):
+            vcf_header = ''
+            with open(vcf) as f:
+                line = f.readline()
+                while not line.startswith('#CHROM'):
+                    vcf_header += line
                     line = f.readline()
-                    while not line.startswith('#CHROM'):
-                        vcf_header += line
-                        line = f.readline()
-                    vcf_header += '#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n'
-                return vcf_header
+            vcf_header += '#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n'
+            return vcf_header
 
-            vcf_header = get_vcf_header(input[0])
-            variant_dict = {}
-            for vcf in input:
-                with open(vcf) as f:
-                    head = f.readline()
-                    while not line.startswith('#CHROM') and line != '':
-                        head = f.readline()
+        vcf_header = get_vcf_header(input[0])
+        variant_dict = {}
+        for vcf in input:
+        with open(vcf) as f:
+            head = f.readline()
+            while not line.startswith('#CHROM') and line != '':
+                head = f.readline()
+                line = f.readline()
+                while line != '':
+                    pos = int(line.split()[1])
+                    variant_dict[pos] = line
                     line = f.readline()
-                    while line != '':
-                        pos = int(line.split()[1])
-                        variant_dict[pos] = line
-                        line = f.readline()
-            with open(output[0], 'w') as out:
-                out.write(vcf_header)
-                for pos in sorted(variant_dict.keys()):
-                    line = variant_dict[pos]
-                    out.write(line)
+        with open(output[0], 'w') as out:
+            out.write(vcf_header)
+            for pos in sorted(variant_dict.keys()):
+                line = variant_dict[pos]
+                out.write(line)
 
-        rule zip_putative:
-            input:
-                "combined_putative/all.vcf"
-            output:
-                vcf = "known_sites/putative/all.vcf.gz",
-                tbi = "known_sites/putative/all.vcf.gz.tbi"
-            shell:
-                "bgzip {input};tabix -p vcf {output.vcf}"
+rule zip_putative:
+    input:
+        "combined_putative/all.vcf"
+    output:
+        vcf = "known_sites/putative/all.vcf.gz",
+        tbi = "known_sites/putative/all.vcf.gz.tbi"
+    conda:
+        "../envs/tabix.yaml"
+    shell:
+        "bgzip {input};tabix -p vcf {output.vcf}"
 
-if config["use-known-sites"] == "YES":
-    rule copy_known_sites:
-        input:
-            vcf = config["known_sites"],
-            tbi = config["known_sites"] + ".tbi"
-        output:
-            vcf = "known_sites/known/all.vcf.gz",
-            tbi = "known_sites/known/all.vcf.gz.tbi"
-        shell:
-            "cp {input.vcf} {output.vcf};cp {input.tbi} {output.tbi}"
+rule copy_known_sites:
+    input:
+        vcf = config["params"]["known_sites"]["vcf"],
+        tbi = config["params"]["known_sites"]["vcf"] + ".tbi"
+    output:
+        vcf = "known_sites/known/all.vcf.gz",
+        tbi = "known_sites/known/all.vcf.gz.tbi"
+    shell:
+        "cp {input.vcf} {output.vcf};cp {input.tbi} {output.tbi}"
 
 
 rule call_known_variants:
@@ -160,41 +162,39 @@ rule make_diploid_variants:
     run:
         make_diploid_vcf(input.vcf, output.vcf)
 
-rule all_variant_vcf:
-    input:
-        vcfs = expand("diploid/{method}/all.vcf", method = methods)
-    output:
-        "diploid/all_variant.vcf"
-
 rule filter_unique_variants:
     input:
-        all_variant = "diploid/all_variant.vcf",
-        vcf = "diploid/{method}/all.vcf"
+        unpack(get_all_variant_vcfs)
     output:
-        vcf = "filter_unique/{method}.vcf"
+        expand("filter_unique/{method}/all.vcf", method = calling_methods)
     run:
-        known_variant_dict = {}
-        for vcf in input.known_vcfs:
+        all_variant_dict = {}
+        for vcf in input.vcfs:
             with open(vcf) as f:
                 for line in f:
                     if line[0] != '#':
                         line_list = line.split()
                         (chrom, pos, x, ref, alt) = line_list[:5]
-                        known_variant_dict[(chrom, pos, ref, alt)] = 1
-        with open(input.ploidy) as f, open(output.vcf, 'w') as out:
-            for line in f:
-                if line[0] != '#':
-                    line_list = line.split()
-                    (chrom, pos, x, ref, alt) = line_list[:5]
-                    if not known_variant_dict.get((chrom, pos, ref, alt)):
+                        all_variant_dict[(chrom, pos, ref, alt)] = 1
+        input_dict = get_all_variant_vcfs()
+        for method in input_dict.keys():
+            in_vcf = input_dict[method]
+            out_vcf = "filter_unique/" + method + "/all.vcf"
+            with open(in_vcf) as f, open(out_vcf, 'w') as out:
+                for line in f:
+                    if line[0] == '#':
                         out.write(line)
-                else:
-                    out.write(line)
+                    else:
+                        line_list = line.split()
+                        (chrom, pos, x, ref, alt) = line_list[:5]
+                        if all_variant_dict.get((chrom, pos, ref, alt)):
+                            out.write(line)
+                            del all_variant_dict[(chrom, pos, ref, alt)]
 
 rule merge_variants:
     input:
         ref=get_fai(), # fai is needed to calculate aggregation over contigs below
-        vcfs= ["filter_unique/ploidy.vcf", "diploid/known/all.vcf"]
+        vcfs= expand("filter_unique/{method}/all.vcf", method = calling_methods)
     output:
         vcf="nemo_genotypes/all.vcf.gz"
     log:
