@@ -24,18 +24,18 @@ rule call_putative_variants:
         bam = "merge_recal/{sample}.bam",
         ref = config["ref"]["genome"],
         vcf = config["focused-genotyping"]["vcf_for_header"]
-        output:
-            "putative_variants/{sample}.vcf"
-        params:
-            chrom = config["params"]["putative"]["chrom"],
-            start = config["params"]["putative"]["start"],
-            end = config["params"]["putative"]["end"],
-            min_alt = config["params"]["putative"]["min_alt"]
-        conda:
-            "../envs/putative.yaml"
-        shell:
-            "python scripts/putative_variants.py -b {input.bam} -o {output} -v {input.vcf} "
-            "-R {input.ref} -c {params.chrom} -s {params.start} -e {params.end} -m {params.min_alt}"
+    output:
+        "putative_variants/{sample}.vcf"
+    params:
+        chrom = config["params"]["putative"]["chrom"],
+        start = config["params"]["putative"]["start"],
+        end = config["params"]["putative"]["end"],
+        min_alt = config["params"]["putative"]["min_alt"]
+    conda:
+        "../envs/putative.yaml"
+    shell:
+        "python scripts/putative_variants.py -b {input.bam} -o {output} -v {input.vcf} "
+        "-R {input.ref} -c {params.chrom} -s {params.start} -e {params.end} -m {params.min_alt}"
 
 rule merge_putative_variants:
     input:
