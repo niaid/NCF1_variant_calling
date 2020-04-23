@@ -70,6 +70,7 @@ if config["deep-discovery"] == "YES":
                 for pos in sorted(variant_dict.keys()):
                     line = variant_dict[pos]
                     out.write(line)
+
         rule zip_putative:
             input:
                 "combined_putative/all.vcf"
