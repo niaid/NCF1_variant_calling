@@ -19,19 +19,18 @@ rule register_gatk3:
     shell:
         "gatk3-register {input.jar}"
 
-if config["deep-discovery"] == "YES":
-    rule call_putative_variants:
-        input:
-            bam = "merge_recal/{sample}.bam",
-            ref=config["ref"]["genome"],
-            vcf = config["ref"]["known-variants"]
+rule call_putative_variants:
+    input:
+        bam = "merge_recal/{sample}.bam",
+        ref = config["ref"]["genome"],
+        vcf = config["focused-genotyping"]["vcf_for_header"]
         output:
             "putative_variants/{sample}.vcf"
         params:
-            chrom = config["params"]["deep-discovery"]["chrom"],
-            start = config["params"]["deep-discovery"]["start"],
-            end = config["params"]["deep-discovery"]["end"],
-            min_alt = config["params"]["deep-discovery"]["min_alt"]
+            chrom = config["focused-genotyping"]["chrom"],
+            start = config["focused-genotyping"]["start"],
+            end = config["focused-genotyping"]["end"],
+            min_alt = config["focused-genotyping"]["min_alt"]
         conda:
             "../envs/putative.yaml"
         shell:

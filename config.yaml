@@ -12,12 +12,7 @@ ref:
 
 focused-genotyping:
   known_sites: true
-  known_vcf: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
   putative: true
-  chrom: X
-  start: 153788571
-  end: 32008435
-  vcf_for_header: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
 
 filtering:
   # Set to true in order to apply machine learning based recalibration of
@@ -50,6 +45,13 @@ params:
     BaseRecalibrator: ""
     GenotypeGVCFs: "--java-options \"-Xmx200G\" -ploidy 4 -L X:153769495-153795321"
     VariantRecalibrator: ""
+  known_sites:
+    vcf: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
+  putative:
+    chrom: X
+    start: 153788571
+    end: 32008435
+    min_alt: 2
   picard:
     MarkDuplicates: "REMOVE_DUPLICATES=true"
   trimmomatic:
