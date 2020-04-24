@@ -9,8 +9,6 @@ min_version("5.7.1")
 
 report: "../report/workflow.rst"
 
-calling_methods = ['ploidy', 'known']
-
 ###### Function to parse bam file #####
 def get_rg_from_bam(bam):
     '''
@@ -54,6 +52,15 @@ units.index = units.index.set_levels([i.astype(str) for i in units.index.levels]
 validate(units, schema="../schemas/units.schema.yaml")
 
 
+
+calling_methods = ["ploidy"]
+if config["focused-genotyping"]["known_sites"]:
+    calling_methods.append("known")
+if config["focused-genotyping"]["putative"]:
+    calling_methods.append("putative")
+
+
+
 ##### Wildcard constraints #####
 wildcard_constraints:
     vartype="snvs|indels",
@@ -73,6 +80,20 @@ def get_rg_subset_param(wildcards):
     bed = config["processing"]["restrict-regions"]
     return "-F 4 -f 2 -hbr " + rg + " -L " + bed
 
+
+def get_all_variant_vcfs(wildcards):
+    """
+    return the input vcf files based on what's specified in the config file
+    """
+    vcf_dict = {"ploidy":"diploid/ploidy/all.vcf"}
+    if config["focused-genotyping"]["known_sites"] and config["focused-genotyping"]["putative"]:
+        vcf_dict["known"] = "diploid/known/all.vcf"
+        vcf_dict["putative"] = "diploid/putative/all.vcf"
+    elif config["focused-genotyping"]["known_sites"]:
+        vcf_dict["known"] = "diploid/known/all.vcf"
+    elif config["focused-genotyping"]["putative"]:
+        vcf_dict["putative"] = "diploid/putative/all.vcf"
+    return vcf_dict
 
 def get_fai():
     return config["ref"]["genome"] + ".fai"
@@ -200,3 +221,4 @@ def make_diploid_vcf(in_vcf_gz, out_vcf):
             line_list[9:] = new_genotypes
             out.write('\t'.join(line_list) + '\n')
             line = f.readline()
+

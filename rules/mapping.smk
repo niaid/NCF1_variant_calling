@@ -80,6 +80,16 @@ rule recalibrate_base_qualities:
         "0.27.1/bio/gatk/baserecalibrator"
 
 
+rule merge_recal_bams:
+    input:
+        get_sample_bams
+    output:
+        "merge_recal/{sample}.bam"
+    log:
+        "logs/picard/mergesamfiles/{sample}.log"
+    wrapper:
+        "0.51.3/bio/picard/mergesamfiles"
+
 rule samtools_index:
     input:
         "{prefix}.bam"

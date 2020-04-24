@@ -10,6 +10,10 @@ ref:
   known-variants: /hpcdata/bio_data/current/GATK/bundle/2.8/b37/dbsnp_138.b37.vcf.gz
   gatk3_jar: /sysapps/cluster/software/GATK/3.8.1-Java-1.8.0_92/GenomeAnalysisTK.jar
 
+focused-genotyping:
+  known_sites: true
+  putative: true
+
 filtering:
   # Set to true in order to apply machine learning based recalibration of
   # quality scores instead of hard filtering.
@@ -37,10 +41,18 @@ params:
       ploidy:
         "-ploidy 4"
       known:
-        "-ploidy 4 --output_mode EMIT_ALL_SITES --genotyping_mode GENOTYPE_GIVEN_ALLELES --alleles /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz"
+        "-ploidy 4 --output_mode EMIT_ALL_SITES --genotyping_mode GENOTYPE_GIVEN_ALLELES"
     BaseRecalibrator: ""
     GenotypeGVCFs: "--java-options \"-Xmx200G\" -ploidy 4 -L X:153769495-153795321"
     VariantRecalibrator: ""
+  known_sites:
+    vcf: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
+  putative:
+    chrom: X
+    start: 153788571
+    end: 32008435
+    min_alt: 2
+    vcf_for_header: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
   picard:
     MarkDuplicates: "REMOVE_DUPLICATES=true"
   trimmomatic:
