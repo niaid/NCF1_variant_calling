@@ -50,7 +50,7 @@ params:
   putative:
     chrom: X
     start: 153788571
-    end: 32008435
+    end: 153788823
     min_alt: 2
     vcf_for_header: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
   picard:
