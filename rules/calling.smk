@@ -58,7 +58,7 @@ rule merge_putative_variants:
         for vcf in input:
             with open(vcf) as f:
                 head = f.readline()
-                while not line.startswith('#CHROM') and line != '':
+                while not head.startswith('#CHROM') and head != '':
                     head = f.readline()
                 line = f.readline()
                 while line != '':
