@@ -176,7 +176,7 @@ rule filter_unique_variants:
                         line_list = line.split()
                         (chrom, pos, x, ref, alt) = line_list[:5]
                         all_variant_dict[(chrom, pos, ref, alt)] = 1
-        input_dict = get_all_variant_vcfs()
+        input_dict = get_all_variant_vcfs(wildcards)
         for method in input_dict.keys():
             in_vcf = input_dict[method]
             out_vcf = "filter_unique/" + method + "/all.vcf"
