@@ -80,7 +80,7 @@ rule zip_putative:
     conda:
         "../envs/tabix.yaml"
     shell:
-        "bgzip {input};tabix -p vcf {output.vcf}"
+        "bgzip -c {input} > {output.vcf};tabix -p vcf {output.vcf}"
 
 rule copy_known_sites:
     input:
