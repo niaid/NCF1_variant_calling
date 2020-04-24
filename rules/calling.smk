@@ -169,7 +169,7 @@ rule filter_unique_variants:
         expand("filter_unique/{method}/all.vcf", method = calling_methods)
     run:
         all_variant_dict = {}
-        for vcf in input.vcfs:
+        for vcf in input:
             with open(vcf) as f:
                 for line in f:
                     if line[0] != '#':
