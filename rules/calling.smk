@@ -22,7 +22,7 @@ rule register_gatk3:
 rule call_putative_variants:
     input:
         bam = "merge_recal/{sample}.bam",
-        bai = "merge_recal/{sample}.bam.bai"
+        bai = "merge_recal/{sample}.bam.bai",
         ref = config["ref"]["genome"],
         vcf = config["params"]["putative"]["vcf_for_header"]
     output:
