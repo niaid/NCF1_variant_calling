@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
 
 import pysam
+import gzip
 import sys
 import argparse
 
@@ -101,12 +102,16 @@ def output_vcf(vcf_header, out_vcf, samfile, ref, chrom, start, end, min_alt):
 
 def get_vcf_header(vcf):
     vcf_header = ''
-    with open(vcf) as f:
+    if vcf.endswith('.gz'):
+        f = gzip.open(vcf)
+    else:
+        f = open(vcf)
+    line = f.readline()
+    while not line.startswith('#CHROM') and line != '':
+        vcf_header += line
         line = f.readline()
-        while not line.startswith('#CHROM'):
-            vcf_header += line
-            line = f.readline()
-        vcf_header += '#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n'
+    vcf_header += '#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n'
+    f.close()
     return vcf_header
 
 
