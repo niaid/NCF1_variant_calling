@@ -17,7 +17,10 @@ def get_rg_from_bam(bam):
     '''
     
     samfile = pysam.AlignmentFile(bam, "rb")
-    read_groups = samfile.header['RG']
+    if samfile.header.get('RG'):
+        read_groups = samfile.header['RG']
+    else:
+        read_groups = [{}]
     samfile.close()
     return read_groups
 
@@ -43,9 +46,18 @@ for index, row in samples.iterrows():
         d['sample'].append(sample)
         d['bam'].append(bam)
         d['unit'].append(str(i+1))
-        d['ID'].append(readgroups[i]['ID'])
-        d['LB'].append(readgroups[i]['LB'])
-        d['PU'].append(readgroups[i]['PU'])
+        if not readgroups[i].get('ID'):
+            d['ID'].append(sample)
+        else:
+            d['ID'].append(readgroups[i]['ID'])
+        if not readgroups[i].get('LB'):
+            d['LB'].append(sample)
+        else:
+            d['LB'].append(readgroups[i]['LB'])
+        if not readgroups[i].get('PU'):
+            d['PU'].append(sample)
+        else:
+            d['PU'].append(readgroups[i]['PU'])
         d['platform'].append('ILLUMINA')
 units = pd.DataFrame(data=d).set_index(["sample", "unit"], drop=False)
 units.index = units.index.set_levels([i.astype(str) for i in units.index.levels])  # enforce str in index
