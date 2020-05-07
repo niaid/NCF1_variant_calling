@@ -88,9 +88,16 @@ def get_start_bam(wildcards):
 
 def get_rg_subset_param(wildcards):
     """get the param to use for samtools view, namely the RG string"""
+    param_dict = {}
     rg = units.loc[(wildcards.sample, wildcards.unit), ["ID"]].dropna().ID
     bed = config["processing"]["restrict-regions"]
-    return "-F 4 -f 2 -hbr " + rg + " -L " + bed
+    param_dict["flag"] = "-F 4 -f 2 -hbr " + rg
+    with open(bed) as f:
+        line = f.readline()
+    (chrom, start, end) = line.split()
+    region = chrom + ':' + start + '-' + end
+    param_dict["region"] = region
+    return param_dict
 
 
 def get_all_variant_vcfs(wildcards):
