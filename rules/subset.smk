@@ -5,12 +5,10 @@ rule subset_bam:
         get_start_bam
     output:
         bam = "subset/{sample}-{unit}.bam"
-    conda:
-        "../envs/subset.yaml"
     params:
         get_rg_subset_param
-    shell:
-        "samtools view {params.flag} {input.bam} {params.region} > {output}"
+    wrapper:
+        "0.49.0/bio/samtools/view"
 
 rule subset_read_list:
     input:
