@@ -64,6 +64,8 @@ rule samtofastq:
     output:
         fastq1 = "samtofastq/{sample}-{unit}.1.fq",
         fastq2 = "samtofastq/{sample}-{unit}.2.fq"
+    params:
+        extra = "INCLUDE_NON_PRIMARY_ALIGNMENTS=true"
     log:
         "logs/picard/samtofastq/{sample}-{unit}.log"
     wrapper:
