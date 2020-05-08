@@ -7,3 +7,6 @@ genotype_variants:
 vcf_to_tsv:
     threads: 16
     mem_gb: 15
+call_known_variants:
+    threads: 1
+    mem_gb: 100

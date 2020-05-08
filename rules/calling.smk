@@ -105,7 +105,8 @@ rule call_known_variants:
     output:
         vcf = "genotyped/{known}/all.vcf.gz"
     params:
-        extra = get_call_known_variants_params
+        extra = get_call_known_variants_params,
+        java_opts = "-Xmx80G"
     log:
         "logs/gatk/haplotypecaller/{known}/all.known_sites.log"
     conda:
