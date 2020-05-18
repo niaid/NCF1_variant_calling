@@ -43,7 +43,7 @@ params:
       known:
         "-ploidy 4 --output_mode EMIT_ALL_SITES --genotyping_mode GENOTYPE_GIVEN_ALLELES"
     BaseRecalibrator: ""
-    GenotypeGVCFs: "--java-options \"-Xmx200G\" -ploidy 4 -L X:153769495-153795321"
+    GenotypeGVCFs: "-ploidy 4 -L X:153769495-153795321"
     VariantRecalibrator: ""
   known_sites:
     vcf: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz

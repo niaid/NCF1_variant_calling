@@ -150,7 +150,8 @@ rule genotype_variants:
     output:
         vcf="genotyped/ploidy/all.vcf.gz"
     params:
-        extra=config["params"]["gatk"]["GenotypeGVCFs"]
+        extra=config["params"]["gatk"]["GenotypeGVCFs"],
+        java_opts = "-Xmx200G"
     log:
         "logs/gatk/ploidy/genotypegvcfs.log"
     wrapper:
