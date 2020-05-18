@@ -154,7 +154,7 @@ rule genotype_variants:
     log:
         "logs/gatk/ploidy/genotypegvcfs.log"
     wrapper:
-        "0.27.1/bio/gatk/genotypegvcfs"
+        "0.57.0/bio/gatk/genotypegvcfs"
 
 rule make_diploid_variants:
     input:
