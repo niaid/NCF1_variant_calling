@@ -77,7 +77,7 @@ rule recalibrate_base_qualities:
     log:
         "logs/gatk/bqsr/{sample}-{unit}.log"
     wrapper:
-        "0.57.1/bio/gatk/baserecalibrator"
+        "0.57.0/bio/gatk/baserecalibrator"
 
 
 rule merge_recal_bams:
