@@ -128,7 +128,7 @@ rule call_variants:
     params:
         extra=get_call_ploidy_variants_params
     wrapper:
-        "0.27.1/bio/gatk/haplotypecaller"
+        "0.57.1/bio/gatk/haplotypecaller"
 
 
 rule combine_calls:
@@ -140,7 +140,7 @@ rule combine_calls:
     log:
         "logs/gatk/ploidy/combinegvcfs.log"
     wrapper:
-        "0.27.1/bio/gatk/combinegvcfs"
+        "0.57.1/bio/gatk/combinegvcfs"
 
 
 rule genotype_variants:
