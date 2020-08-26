@@ -90,7 +90,7 @@ def get_rg_subset_param(wildcards):
     """get the param to use for samtools view, namely the RG string"""
     rg = units.loc[(wildcards.sample, wildcards.unit), ["ID"]].dropna().ID
     bed = config["processing"]["restrict-regions"]
-    return "-F 4 -f 2 -hbr " + rg + " -ML " + bed
+    return "-F 4 -F 0x900 -f 2 -hbr " + rg + " -ML " + bed
 
 
 def get_all_variant_vcfs(wildcards):
