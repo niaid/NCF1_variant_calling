@@ -10,3 +10,6 @@ vcf_to_tsv:
 call_known_variants:
     threads: 1
     mem_gb: 100
+combine_calls:
+    threads: 16
+    mem_gb: 15
