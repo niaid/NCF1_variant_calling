@@ -14,6 +14,9 @@ focused-genotyping:
   known_sites: true
   putative: true
 
+subset:
+  bed: /hpcdata/bcbb/karlinser/Projects/NEMO/IKBKG.bed
+
 filtering:
   # Set to true in order to apply machine learning based recalibration of
   # quality scores instead of hard filtering.
