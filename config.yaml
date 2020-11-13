@@ -44,7 +44,7 @@ params:
       ploidy:
         "-ploidy 4"
       known:
-        "-ploidy 4 --output_mode EMIT_ALL_SITES --genotyping_mode GENOTYPE_GIVEN_ALLELES"
+        "-ploidy 4 --alleles "
     BaseRecalibrator: ""
     GenotypeGVCFs: "-ploidy 4 -L X:153769495-153795321"
     VariantRecalibrator: ""

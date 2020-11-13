@@ -96,23 +96,45 @@ rule copy_known_sites:
 
 rule call_known_variants:
     input:
-        gatk_registered = ".gatk-registered",
-        bams = get_all_sample_bams,
+        bams = get_sample_bams,
         ref=config["ref"]["genome"],
         known=config["ref"]["known-variants"],
         regions="called/regions.bed",
         known_sites = "known_sites/{known}/all.vcf.gz"
     output:
-        vcf = "genotyped/{known}/all.vcf.gz"
+       gvcf = "genotyped/{known}/{sample}.g.vcf.gz"
     params:
         extra = get_call_known_variants_params,
         java_opts = "-Xmx80G"
     log:
         "logs/gatk/haplotypecaller/{known}/all.known_sites.log"
-    conda:
-        "../envs/gatk.yaml"
-    script:
-        "../scripts/known_sites.py"
+    wrapper:
+        "0.67.0/bio/gatk/haplotypecaller"
+
+rule combine_known:
+    input:
+        ref=config["ref"]["genome"],
+        gvcfs=expand("genotyped/{{known}}/{sample}.g.vcf.gz", sample=samples.index)
+    output:
+        gvcf="genotyped/{{known}}/all.g.vcf.gz"
+    log:
+        "logs/gatk/ploidy/combinegvcfs.log"
+    wrapper:
+        "0.57.0/bio/gatk/combinegvcfs"
+
+rule genotype_known:
+    input:
+        ref=config["ref"]["genome"],
+        gvcf="genotyped/{{known}}/all.g.vcf.gz"
+    output:
+        vcf="genotyped/{{known}}/all.vcf.gz"
+    params:
+        extra=config["params"]["gatk"]["GenotypeGVCFs"],
+        java_opts = "-Xmx200G"
+    log:
+        "logs/gatk/ploidy/genotypegvcfs.log"
+    wrapper:
+        "0.57.0/bio/gatk/genotypegvcfs"
 
 
 rule call_variants:

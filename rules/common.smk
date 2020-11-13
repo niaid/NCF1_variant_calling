@@ -180,7 +180,7 @@ def get_call_ploidy_variants_params(wildcards, input):
 
 def get_call_known_variants_params(wildcards, input):
     return (get_regions_param(regions=input.regions, default="--intervals {}".format("X")) +
-            config["params"]["gatk"]["HaplotypeCaller"]["known"])
+            config["params"]["gatk"]["HaplotypeCaller"]["known"]) + config["known_sites"]
 
 def get_recal_input(bai=False):
     # case 1: no duplicate removal
