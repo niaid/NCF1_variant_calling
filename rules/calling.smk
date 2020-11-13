@@ -96,7 +96,7 @@ rule copy_known_sites:
 
 rule call_known_variants:
     input:
-        bams = get_sample_bams,
+        bam = "merge_recal/{sample}.bam",
         ref=config["ref"]["genome"],
         known=config["ref"]["known-variants"],
         regions="called/regions.bed",
