@@ -3,11 +3,11 @@ units: units.tsv
 known_sites: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
 
 ref:
-  name: GRCh37.75
+  name: GRCh38
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
-  genome: /hpcdata/bcbb/karlinser/Projects/NEMO/mask_fasta/human_g1k_v37_decoy_IKBKGP1_masked.fasta
+  genome: /hpcdata/ncgp/Holland/results/2023-11-21_NCF1_mask_pseudogenes/mask_fasta/Homo_sapiens_assembly38_plus_NCF1_mask.fasta
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
-  known-variants: /hpcdata/bio_data/current/GATK/bundle/2.8/b37/dbsnp_138.b37.vcf.gz
+  known-variants: /hpcdata/bio_data/current/GATK/bundle/hg38/Homo_sapiens_assembly38.dbsnp138.vcf.gz
   gatk3_jar: /sysapps/cluster/software/GATK/3.8.1-Java-1.8.0_92/GenomeAnalysisTK.jar
 
 focused-genotyping:
@@ -15,7 +15,7 @@ focused-genotyping:
   putative: true
 
 subset:
-  bed: /hpcdata/bcbb/karlinser/Projects/NEMO/IKBKG.bed
+  bed: /hpcdata/ncgp/Holland/results/2023-11-21_NCF1_mask_pseudogenes/NCF1_region.bed
 
 filtering:
   # Set to true in order to apply machine learning based recalibration of
@@ -42,11 +42,11 @@ params:
   gatk:
     HaplotypeCaller:
       ploidy:
-        "-ploidy 4"
+        "-ploidy 6"
       known:
-        "-ploidy 4 --alleles "
+        "-ploidy 6 --alleles "
     BaseRecalibrator: ""
-    GenotypeGVCFs: "-ploidy 4 -L X:153769495-153795321"
+    GenotypeGVCFs: "-ploidy 6 -L chr7:74774011-74789315"
     VariantRecalibrator: ""
   known_sites:
     vcf: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
