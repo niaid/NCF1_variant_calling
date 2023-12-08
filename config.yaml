@@ -49,13 +49,13 @@ params:
     GenotypeGVCFs: "-ploidy 6 -L chr7:74774011-74789315"
     VariantRecalibrator: ""
   known_sites:
-    vcf: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
+    vcf: /hpcdata/ncgp/Holland/results/2023-11-21_NCF1_mask_pseudogenes/known_sites.vcf.gz
   putative:
     chrom: X
     start: 153788571
     end: 153788823
     min_alt: 2
-    vcf_for_header: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
+    vcf_for_header: /hpcdata/ncgp/Holland/results/2023-11-21_NCF1_mask_pseudogenes/known_sites.vcf.gz
   picard:
     MarkDuplicates: "REMOVE_DUPLICATES=true"
   trimmomatic:
