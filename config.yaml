@@ -51,9 +51,9 @@ params:
   known_sites:
     vcf: /hpcdata/ncgp/Holland/results/2023-11-21_NCF1_mask_pseudogenes/known_sites.vcf.gz
   putative:
-    chrom: X
-    start: 153788571
-    end: 153788823
+    chrom: chr7
+    start: 73219639
+    end: 75173044
     min_alt: 2
     vcf_for_header: /hpcdata/ncgp/Holland/results/2023-11-21_NCF1_mask_pseudogenes/known_sites.vcf.gz
   picard:
