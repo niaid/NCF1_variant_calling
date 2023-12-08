@@ -1,6 +1,6 @@
 samples: samples.tsv
 units: units.tsv
-known_sites: /hpcdata/bcbb/karlinser/Projects/NEMO/known_sites.vcf.gz
+known_sites: /hpcdata/ncgp/Holland/results/2023-11-21_NCF1_mask_pseudogenes/known_sites.vcf.gz
 
 ref:
   name: GRCh38
@@ -46,7 +46,7 @@ params:
       known:
         "-ploidy 6 --alleles "
     BaseRecalibrator: ""
-    GenotypeGVCFs: "-ploidy 6 -L chr7:74774011-74789315"
+    GenotypeGVCFs: "-ploidy 6 -L chr7:74773811-74789515"
     VariantRecalibrator: ""
   known_sites:
     vcf: /hpcdata/ncgp/Holland/results/2023-11-21_NCF1_mask_pseudogenes/known_sites.vcf.gz
