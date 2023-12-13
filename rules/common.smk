@@ -84,7 +84,7 @@ wildcard_constraints:
 
 def get_start_bam(wildcards):
     """get input bam given sample-units"""
-    return samples.loc[(wildcards.sample, wildcards.unit), ["bam"]].dropna().bam
+    return samples.loc[(wildcards.sample), ["bam"]].dropna().bam
 
 def get_rg_subset_param(wildcards):
     """get the param to use for samtools view, namely the RG string"""
