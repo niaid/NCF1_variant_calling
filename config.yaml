@@ -3,7 +3,7 @@ units: units.tsv
 known_sites: /hpcdata/ncgp/Holland/results/2023-11-21_NCF1_mask_pseudogenes/known_sites.vcf.gz
 
 ref:
-  name: GRCh38
+  name: hg38
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
   genome: /hpcdata/ncgp/Holland/results/2023-11-21_NCF1_mask_pseudogenes/mask_fasta/Homo_sapiens_assembly38_plus_NCF1_mask.fasta
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
