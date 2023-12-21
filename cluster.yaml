@@ -13,3 +13,6 @@ call_known_variants:
 combine_calls:
     threads: 16
     mem_gb: 15
+combine_known:
+    threads: 16
+    mem_gb: 15
