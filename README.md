@@ -7,26 +7,40 @@ This Snakemake pipeline implements the [GATK best-practices workflow](https://so
 
 This workflow is adapted from this Snakemake pipeline: https://github.com/snakemake-workflows/dna-seq-gatk-variant-calling
 
+Many updates were made to the pipeline for calling variants in duplicated regions, like the NCF1 gene.
+
 ## Authors
 
-* Johannes Köster (https://koesterlab.github.io)
+* Eric Karlins
 
 
 ## Usage
 
-In any case, if you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) repository and, if available, its DOI (see above).
+You'll first need to create a fasta file with duplicated regions that match your region of interest masked with Ns.
 
+#### Step 1: Create masked reference fasta file
 
-#### Step 1: Obtain a copy of this workflow
+1. For NCF1, using the hg38 reference fasta, I created a bed file with two lines to mask the regions of NCF1b and NCF1c. This bed looked like this:
+```
+chr7    73220639    73235945
+chr7    75156639    75172044
+```
 
-1. Create a new github repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
-2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
+2. Next I used `bedtools maskfasta` to create the masked reference file. The command was:
+`bedtools maskfasta -fi Homo_sapiens_assembly38_plus.fasta -bed NCF1_region_to_mask.bed -fo Homo_sapiens_assembly38_plus_NCF1_mask.fasta`
 
-#### Step 2: Configure workflow
+3. Create the bwa index files for your new fasta reference:
+`bwa index Homo_sapiens_assembly38_plus_NCF1_mask.fasta`
+
+#### Step 2: Obtain a copy of this workflow
+
+[Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
+
+#### Step 3: Configure workflow
 
 Configure the workflow according to your needs via editing the file `config.yaml`.
 
-#### Step 3: Execute workflow
+#### Step 4: Execute workflow
 
 Test your configuration by performing a dry-run via
 
@@ -50,33 +64,3 @@ If you not only want to fix the software stack but also the underlying OS, use
 
 in combination with any of the modes above.
 See the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executable.html) for further details.
-
-#### Step 4: Investigate results
-
-After successful execution, you can create a self-contained interactive HTML report with all results via:
-
-    snakemake --report report.html
-
-This report can, e.g., be forwarded to your collaborators.
-An example (using some trivial test data) can be seen [here](https://cdn.rawgit.com/snakemake-workflows/dna-seq-gatk-variant-calling/master/.test/report.html).
-
-#### Step 5: Commit changes
-
-Whenever you change something, don't forget to commit the changes back to your github copy of the repository:
-
-    git commit -a
-    git push
-
-#### Step 6: Contribute back
-
-In case you have also changed or added steps, please consider contributing them back to the original repository:
-
-1. [Fork](https://help.github.com/en/articles/fork-a-repo) the original repo to a personal or lab account.
-2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the fork to your local system, to a different place than where you ran your analysis.
-3. Copy the modified files from your analysis to the clone of your fork, e.g., `cp -r envs rules scripts path/to/fork`. Make sure to **not** accidentally copy config file contents or sample sheets.
-4. Commit and push your changes to your fork.
-5. Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request) against the original repository.
-
-## Testing
-
-Test cases are in the subfolder `.test`. They are automtically executed via continuous integration with Github actions.
