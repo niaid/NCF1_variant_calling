@@ -17,11 +17,7 @@ You'll first need to create a fasta file with duplicated regions that match your
 
 #### Step 1: Create masked reference fasta file
 
-1. For NCF1, using the hg38 reference fasta, I created a bed file with two lines to mask the regions of NCF1b and NCF1c. This bed looked like this:
-```
-chr7    73220639    73235945
-chr7    75156639    75172044
-```
+1. For NCF1, using the hg38 reference fasta, I created a bed file with two lines to mask the regions of NCF1b and NCF1c. This bed file can be found in `resources/NCF1_region_to_mask.bed`
 
 2. Next I used `bedtools maskfasta` to create the masked reference file. The command was:
 
