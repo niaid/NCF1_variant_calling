@@ -27,9 +27,11 @@ chr7    75156639    75172044
 ```
 
 2. Next I used `bedtools maskfasta` to create the masked reference file. The command was:
+
 `bedtools maskfasta -fi Homo_sapiens_assembly38_plus.fasta -bed NCF1_region_to_mask.bed -fo Homo_sapiens_assembly38_plus_NCF1_mask.fasta`
 
 3. Create the bwa index files for your new fasta reference:
+   
 `bwa index Homo_sapiens_assembly38_plus_NCF1_mask.fasta`
 
 #### Step 2: Obtain a copy of this workflow
