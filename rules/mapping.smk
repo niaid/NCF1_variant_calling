@@ -35,19 +35,20 @@ rule trim_reads_pe:
 
 rule map_reads:
     input:
-        reads=get_trimmed_reads
+        reads=get_trimmed_reads,
+        idx=multiext(config["ref"]["genome"], ".amb", ".ann", ".bwt", ".pac", ".sa")
     output:
         temp("mapped/{sample}-{unit}.sorted.bam")
     log:
         "logs/bwa_mem/{sample}-{unit}.log"
     params:
-        index=config["ref"]["genome"],
         extra=get_read_group,
-        sort="samtools",
-        sort_order="coordinate"
+        sorting="samtools",
+        sort_order="coordinate",
+        sort_extra=""
     threads: 8
     wrapper:
-        "0.27.1/bio/bwa/mem"
+        "v8.0.3/bio/bwa/mem"
 
 
 rule mark_duplicates:
